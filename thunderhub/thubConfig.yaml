@@ -1,0 +1,6 @@
+masterPassword: changethisbeforestarting
+accounts:
+  - name: Umbrel
+    serverUrl: 10.21.21.9:10009
+    certificatePath: /lnd/tls.cert
+    macaroonPath: /lnd/admin.macaroon

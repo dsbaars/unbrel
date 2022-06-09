@@ -1,0 +1,99 @@
+version: "3.7"
+
+services:
+  # thunderhub:
+  #   image: ${THUNDERHUB_IMAGE}
+  #   ports:
+  #     - 3088:3088
+  #   depends_on: [ lnd ]
+  #   volumes:
+  #     - ./thunderhub:/data
+  #     - ${LND_DATADIR}/tls.cert:/lnd/tls.cert:ro
+  #     - ${LND_DATADIR}/data/chain/bitcoin/mainnet/admin.macaroon:/lnd/admin.macaroon:ro
+  #   environment:
+  #     PORT: 3088
+  #     HOST: 0.0.0.0
+  #     NO_VERSION_CHECK: "true"
+  #     ACCOUNT_CONFIG_PATH: "/data/thubConfig.yaml"
+  #     TOR_PROXY_SERVER: "socks://tor:9050"
+  #   profiles:
+  #     - with_thunderhub
+  # rtl:
+  #   image: ${RTL_IMAGE}
+  #   depends_on: [ lnd ]
+  #   ports:
+  #     - 3099:3099
+  #   volumes:
+  #     - ./rtl:/shared
+  #     - ${LND_DATADIR}/tls.cert:/lnd/tls.cert:ro
+  #     - ${LND_DATADIR}/data/chain/bitcoin/mainnet/admin.macaroon:/lnd/admin.macaroon:ro
+  #   environment:
+  #     PORT: 3099
+  #     HOST: 0.0.0.0
+  #     RTL_SSO: 0
+  #     RTL_COOKIE_PATH: ''
+  #     LOGOUT_REDIRECT_LINK: ''
+  #     RTL_CONFIG_PATH: /shared/config
+  #     BITCOIND_CONFIG_PATH: ''
+  #     CHANNEL_BACKUP_PATH: /shared/backup
+  #   profiles:
+  #     - with_rtl
+  # bos:
+  #   image: alexbosworth/balanceofsatoshis
+  #   volumes:
+  #     - './bos:/home/node/.bos'
+  #     - '${LND_DATADIR}:/home/node/.lnd:ro'
+  #   depends_on: [ lnd ]
+  #   profiles:
+  #     - with_bos
+  lnd:
+    container_name: lnd
+    image: ${LND_IMAGE}
+    user: 1000:1000
+    restart: unless-stopped
+    depends_on: [ tor ]
+    ports:
+      - 9735:9735
+      - 10009:10009
+      - 8080:8080
+    volumes:
+      - ${LND_DATADIR}:/data/.lnd
+    environment:
+      HOME: /data
+    networks:
+      umbrel:
+        ipv4_address: 10.21.21.9
+  bitcoin:
+    container_name: bitcoin
+    image: ${BITCOIND_IMAGE}
+    restart: unless-stopped
+    depends_on: [ tor ]
+    volumes:
+    - ./bitcoind/bitcoin.conf:/data/.bitcoin/bitcoin.conf
+    - ${BITCOIND_DATADIR}:/data/.bitcoin
+    ports:
+      - 8333:8333
+      - 8332:8332
+    stop_grace_period: 15m30s
+    networks:
+      umbrel:
+        ipv4_address: 10.21.21.8
+  tor:
+    container_name: tor
+    image: ${TOR_IMAGE}
+    user: toruser
+    restart: unless-stopped
+    volumes:
+      - ${TOR_DATADIR}/torrc:/etc/tor/torrc
+      - ${TOR_DATADIR}:/var/lib/tor
+    networks:
+      umbrel:
+        ipv4_address: 10.21.21.11
+networks:
+  umbrel:
+    name: umbrel_main_network
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.21.0.0/16"
+ 
