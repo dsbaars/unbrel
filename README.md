@@ -5,9 +5,9 @@ For anyone who wants to run a serious LN node, with a less beautiful interface b
 - Only necessary containers
 - More control over your node in general.
 
-This repository should allow anyone to move away from Umbrel after updating to version 0.5.0. It only uses the bare minimum (tor, bitcoind, LND) but you can optionally run RTL, Thunderhub and/or bos.
+This repository should allow anyone to move away from Umbrel after updating to version 0.5.0. By default it only uses the bare minimum (tor, bitcoind, LND) but you can optionally run RTL, Thunderhub, LNDg and/or lightning-shell.
 
-**NOTE**: Still a work in progress, only the bare minimum (tor, bitcoind, LND) is tested and working. 
+**NOTE**: The apps are commented out in the compose config but [Thunderhub](https://github.com/apotdevin/thunderhub), [RTL](https://github.com/Ride-The-Lightning/RTL), [LNDg](https://github.com/cryptosharks131/lndg) and [lightning-shell](https://github.com/ibz/lightning-shell) should already work. 
 
 If you stay at bitcoin-core v22, you can probably switch back to Umbrel if you would want to.
 
@@ -21,7 +21,20 @@ If you stay at bitcoin-core v22, you can probably switch back to Umbrel if you w
 6. Unlock your LND instance. Yes the password is still `moneyprintergobrrr` 😢
 7. Enjoy.
 
-Thunderhub/RTL is commented out in the compose config but Thunderhub should already work. RTL coming soon, or fix it yourself.
+The apps are commented out in the compose config but Thunderhub, RTL, LNDg and lightning-shell should already work. 
+
+## Defaukt images overview
+
+You can choose your own images and versions in `.env`
+
+| **Component**   | **Default Image + Version**         | **Enabled by default?** | **Uses Tor?** | **Exposed by Tor** |
+|-----------------|-------------------------------------|-------------------------|---------------|--------------------|
+| bitcoind        | lncm/bitcoind:v22.0                 | yes                     | yes           | yes                |
+| lnd             | lightninglabs/lnd:v0.14.3-beta      | yes                     | yes           | yes                |
+| ThunderHub      | apotdevin/thunderhub:v0.13.13       | no                      | yes           | no                 |
+| RTL             | shahanafarooqui/rtl:0.12.3          | no                      | N/A           | no                 |
+| lightning-shell | dsbaars/lightning-shell:latest      | no                      | N/A           | no                 |
+| LNDg            | ghcr.io/cryptosharks131/lndg:v1.1.1 | no                      | N/A           | no                 |
 
 ### docker-compose override
 ````yaml

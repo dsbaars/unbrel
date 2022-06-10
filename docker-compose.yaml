@@ -1,6 +1,40 @@
 version: "3.7"
 
 services:
+  # lndg:
+  #   image: ${LNDG_IMAGE}
+  #   restart: on-failure
+  #   stop_grace_period: 1m
+  #   ports:
+  #     - "8889:8889"
+  #   volumes:
+  #     - ${LND_DATADIR}:/root/.lnd:ro
+  #     - ./lndg:/lndg/data
+  #   command:
+  #     - sh
+  #     - -c
+  #     - python initialize.py -net 'mainnet' -server '${LND_IP}:10009' -pw '${LNDG_PASSWORD}' -d && supervisord && python manage.py runserver 0.0.0.0:8889
+  #   networks:
+  #     umbrel: {}
+  # lnshell:
+  #   image: ${LNSHELL_IMAGE}
+  #   restart: on-failure
+  #   stop_grace_period: 1m
+  #   ports:
+  #     - 7681:7681
+  #   volumes:
+  #     - ${LND_DATADIR}:/lnd:ro
+  #     - ./lightningshell:/data
+  #   networks:
+  #     umbrel: {}
+  #   environment:
+  #       APP_PASSWORD: ${LNSHELL_PASSWORD}
+  #       BITCOIND_IP: ${BITCOIND_IP}
+  #       BITCOIN_RPC_PORT: "8332"
+  #       BITCOIN_RPC_USER: ${BITCOIND_RPC_USER}
+  #       BITCOIN_RPC_PASS: ${BITCOIND_RPC_PASSWORD}
+  #       LND_IP: ${LND_IP}
+  #       LND_GRPC_PORT: 10009
   # thunderhub:
   #   image: ${THUNDERHUB_IMAGE}
   #   ports:
@@ -10,6 +44,8 @@ services:
   #     - ./thunderhub:/data
   #     - ${LND_DATADIR}/tls.cert:/lnd/tls.cert:ro
   #     - ${LND_DATADIR}/data/chain/bitcoin/mainnet/admin.macaroon:/lnd/admin.macaroon:ro
+  #   networks:
+  #     umbrel: {}
   #   environment:
   #     PORT: 3088
   #     HOST: 0.0.0.0
@@ -27,6 +63,8 @@ services:
   #     - ./rtl:/shared
   #     - ${LND_DATADIR}/tls.cert:/lnd/tls.cert:ro
   #     - ${LND_DATADIR}/data/chain/bitcoin/mainnet/admin.macaroon:/lnd/admin.macaroon:ro
+  #   networks:
+  #     umbrel: {}
   #   environment:
   #     PORT: 3099
   #     HOST: 0.0.0.0
@@ -36,6 +74,11 @@ services:
   #     RTL_CONFIG_PATH: /shared/config
   #     BITCOIND_CONFIG_PATH: ''
   #     CHANNEL_BACKUP_PATH: /shared/backup
+  #     LN_IMPLEMENTATION: "LND"
+  #     LN_SERVER_URL: "https://${LND_IP}:8080"
+  #     MACAROON_PATH: "/lnd"
+  #     CONFIG_PATH: "/lnd/lnd.conf"
+  #     APP_PASSWORD: ${RTL_PASSWORD}
   #   profiles:
   #     - with_rtl
   # bos:
@@ -62,7 +105,7 @@ services:
       HOME: /data
     networks:
       umbrel:
-        ipv4_address: 10.21.21.9
+        ipv4_address: ${LND_IP}
   bitcoin:
     container_name: bitcoin
     image: ${BITCOIND_IMAGE}
@@ -77,7 +120,7 @@ services:
     stop_grace_period: 15m30s
     networks:
       umbrel:
-        ipv4_address: 10.21.21.8
+        ipv4_address: ${BITCOIND_IP}
   tor:
     container_name: tor
     image: ${TOR_IMAGE}
@@ -88,7 +131,7 @@ services:
       - ${TOR_DATADIR}:/var/lib/tor
     networks:
       umbrel:
-        ipv4_address: 10.21.21.11
+        ipv4_address: ${TOR_IP}
 networks:
   umbrel:
     name: umbrel_main_network
