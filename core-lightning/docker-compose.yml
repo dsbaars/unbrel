@@ -1,0 +1,23 @@
+services:
+  lightningd:
+    image: ${CLN_IMAGE}
+    command:
+    - --bitcoin-rpcconnect=${BITCOIND_IP}
+    - --bitcoin-rpcuser=${BITCOIND_RPC_USER}
+    - --bitcoin-rpcpassword=${BITCOIND_RPC_PASSWORD}
+    - --proxy=${TOR_IP}:9050
+    - --bind-addr=${CLN_IP}:9735
+    - --addr=statictor:${TOR_IP}:29051
+    - --tor-service-password=${TOR_PASSWORD}
+    networks:
+      default:
+        ipv4_address: ${CLN_IP}
+    ports:
+    - ${CLN_EXPOSED_PORT}:9735
+    restart: on-failure
+    volumes:
+    - /home/umbrel/umbrel/app-data/core-lightning/data/lightningd:/data/.lightning:rw
+networks:
+  default:
+    external: true
+    name: umbrel_main_network
